@@ -3,16 +3,24 @@
 <script>
     //Kinect 4
 
-    var boardSize = 7;
+    var boardSizeX = 7;
+    var boardSizeY = 6;
     var board = []; //0 is clear, 1 is player1, 2 is player 2
     var spacing = 1;
     var size = 60;
-    var boardColor = "blue";
+    var boardColor = "black";
+    var highlightCoords = [-1, -1];
+
+    var emptyColor = "gray";
+    var playerOneColor = "red";
+    var playerTwoColor = "blue";
+    var highlightColor = "yellow";
 
     var canvas = document.getElementById("gameCanvas");
     var canvasContext = canvas.getContext("2d");
 
     document.addEventListener("mousedown", mouseClick);
+    document.addEventListener("mousemove", highlight);
 
     window.onload = function() {
         fillBoard();
@@ -26,9 +34,9 @@
 
     function fillBoard() {
         board = []
-        for(var x = 0; x < boardSize; x++) {
+        for(var x = 0; x < boardSizeX; x++) {
             var row = [];
-            for(var y = 0; y < boardSize; y++) {
+            for(var y = 0; y < boardSizeY; y++) {
                 row.push(0);
             }
             board.push(row);
@@ -36,22 +44,24 @@
     }
 
     function clearBoard() {
-        for(var x = 0; x < boardSize; x++) {
-            for(var y = 0; y < boardSize; y++) {
+        for(var x = 0; x < boardSizeX; x++) {
+            for(var y = 0; y < boardSizeY; y++) {
                 board[x][y] = 0;
             }
         }
     }
 
     function drawBoard(spacing, color, size, centered) { //Center not set up
-        drawRect(0, 0, spacing + boardSize * (size + spacing), spacing + boardSize * (size + spacing), color);
-        for(var x = 0; x < boardSize; x++) {
-            for(var y = 0; y < boardSize; y++) {
-                var gapColor = "white";
-                if (board[x][y] == 1) {
-                    gapColor = "red";
+        drawRect(0, 0, spacing + boardSizeX * (size + spacing), spacing + boardSizeY * (size + spacing), color);
+        for(var x = 0; x < boardSizeX; x++) {
+            for(var y = 0; y < boardSizeY; y++) {
+                var gapColor = emptyColor;
+                if (x == highlightCoords[0] && y == highlightCoords[1]) {
+                    gapColor = highlightColor;
+                } else if (board[x][y] == 1) {
+                    gapColor = playerOneColor;
                 } else if (board[x][y] == 2) {
-                    gapColor = "blue";
+                    gapColor = playerTwoColor;
                 }
                 drawCircle(size / 2 + spacing + x * (size + spacing), size / 2 + spacing + y * (size + spacing), size / 2 - spacing, gapColor); 
             }
@@ -68,8 +78,29 @@
         canvasContext.arc(x, y, radius, 0, 2 * Math.PI);
         canvasContext.stroke();
         canvasContext.fillStyle = color;
-        console.log(canvasContext.fillStyle);
         canvasContext.fill();
+    }
+
+    function highlight(e) {
+
+        var x = e.offsetX;
+        var y = e.offsetY;
+
+        if (x < 600 & x >= 0 && y < 600 & y >= 0) {
+
+            var xSpot = Math.floor(x / (spacing + size));
+            var ySpot = Math.floor(y / (spacing + size));
+            if (board[xSpot][ySpot] == 0) {
+                highlightCoords[0] = xSpot;
+                highlightCoords[1] = ySpot;
+            } else {
+                highlightCoords[0] = -1;
+                highlightCoords[1] = -1;
+            }
+            drawAll();
+
+        }
+
     }
 
     function mouseClick(e) {
@@ -80,12 +111,12 @@
 
             var xSpot = Math.floor(x / (spacing + size));
             var ySpot = Math.floor(y / (spacing + size));
-            console.log(x, y);
+            highlightCoords[0] = -1;
+            highlightCoords[1] = -1;
             board[xSpot][ySpot] = 1;
             drawAll();
 
         }
-
     }
 
 </script>
