@@ -1,0 +1,92 @@
+<html>
+<canvas id="gameCanvas" width='600' height='600'></canvas>
+<script>
+    //Kinect 4
+
+    var boardSize = 7;
+    var board = []; //0 is clear, 1 is player1, 2 is player 2
+    var spacing = 1;
+    var size = 60;
+    var boardColor = "blue";
+
+    var canvas = document.getElementById("gameCanvas");
+    var canvasContext = canvas.getContext("2d");
+
+    document.addEventListener("mousedown", mouseClick);
+
+    window.onload = function() {
+        fillBoard();
+        clearBoard();
+        drawAll();
+    }
+
+    function drawAll() {
+        drawBoard(spacing, boardColor, size, false);
+    }
+
+    function fillBoard() {
+        board = []
+        for(var x = 0; x < boardSize; x++) {
+            var row = [];
+            for(var y = 0; y < boardSize; y++) {
+                row.push(0);
+            }
+            board.push(row);
+        }
+    }
+
+    function clearBoard() {
+        for(var x = 0; x < boardSize; x++) {
+            for(var y = 0; y < boardSize; y++) {
+                board[x][y] = 0;
+            }
+        }
+    }
+
+    function drawBoard(spacing, color, size, centered) { //Center not set up
+        drawRect(0, 0, spacing + boardSize * (size + spacing), spacing + boardSize * (size + spacing), color);
+        for(var x = 0; x < boardSize; x++) {
+            for(var y = 0; y < boardSize; y++) {
+                var gapColor = "white";
+                if (board[x][y] == 1) {
+                    gapColor = "red";
+                } else if (board[x][y] == 2) {
+                    gapColor = "blue";
+                }
+                drawCircle(size / 2 + spacing + x * (size + spacing), size / 2 + spacing + y * (size + spacing), size / 2 - spacing, gapColor); 
+            }
+        }
+    }
+
+    function drawRect(x, y, xSize, ySize, color) {
+        canvasContext.fillStyle = color;
+        canvasContext.fillRect(x, y, xSize, ySize);
+    }
+
+    function drawCircle(x, y, radius, color) {
+        canvasContext.beginPath();
+        canvasContext.arc(x, y, radius, 0, 2 * Math.PI);
+        canvasContext.stroke();
+        canvasContext.fillStyle = color;
+        console.log(canvasContext.fillStyle);
+        canvasContext.fill();
+    }
+
+    function mouseClick(e) {
+        var x = e.offsetX;
+        var y = e.offsetY;
+
+        if (x < 600 & x >= 0 && y < 600 & y >= 0) {
+
+            var xSpot = Math.floor(x / (spacing + size));
+            var ySpot = Math.floor(y / (spacing + size));
+            console.log(x, y);
+            board[xSpot][ySpot] = 1;
+            drawAll();
+
+        }
+
+    }
+
+</script>
+</html>
